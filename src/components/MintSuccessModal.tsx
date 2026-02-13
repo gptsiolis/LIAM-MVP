@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
 import {
@@ -32,6 +33,24 @@ export function MintSuccessModal({
   tierName,
   displayName,
 }: MintSuccessModalProps) {
+  const [copied, setCopied] = useState(false);
+
+  const shareText = `I just earned a ${tierName} Card on LIAM for supporting "${videoTitle}" with ${formatAmount(amountCents)}! No ads. Pay what you want. Earn a card.`;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: shareText });
+      } catch {
+        // User cancelled
+      }
+    } else {
+      await navigator.clipboard.writeText(shareText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
@@ -42,7 +61,7 @@ export function MintSuccessModal({
         </DialogHeader>
 
         {/* Card visual */}
-        <div className="mx-auto flex w-full max-w-[280px] flex-col overflow-hidden rounded-lg border-2 border-liam-black">
+        <div className="mx-auto flex w-full max-w-[280px] flex-col overflow-hidden rounded-lg border-2 border-liam-black shadow-[4px_4px_0px_0px_rgba(8,7,8,0.15)] transition-transform duration-300 hover:scale-[1.02]">
           {/* Card top — tier-colored header */}
           <div
             className="flex items-center justify-between px-4 py-3"
@@ -71,7 +90,7 @@ export function MintSuccessModal({
             </div>
           </div>
 
-          {/* Card bottom accent */}
+          {/* Card bottom accent — layered style guide look */}
           <div className="h-1.5 bg-primary" />
         </div>
 
@@ -80,13 +99,29 @@ export function MintSuccessModal({
           contributing {formatAmount(amountCents)}!
         </p>
 
-        <Button
-          size="lg"
-          className="w-full font-bold hover:bg-liam-yellow-light"
-          onClick={() => onOpenChange(false)}
-        >
-          Done
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            size="lg"
+            className="w-full font-bold hover:bg-liam-yellow-light"
+            onClick={() => onOpenChange(false)}
+          >
+            Done
+          </Button>
+
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full font-bold"
+            onClick={handleShare}
+          >
+            {copied ? "Copied!" : `Share your ${tierName} Card`}
+          </Button>
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">
+          View all your cards in{" "}
+          <span className="font-bold text-secondary">Collection</span>
+        </p>
       </DialogContent>
     </Dialog>
   );
