@@ -6,7 +6,8 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 
-interface Supporter {
+export interface Supporter {
+  id: string;
   username: string;
   displayName: string;
   avatarUrl?: string;
@@ -16,60 +17,33 @@ interface Supporter {
   timeAgo: string;
 }
 
-// Fake data — will be replaced with DB queries in Step 5
-const FAKE_SUPPORTERS: Supporter[] = [
-  {
-    username: "alexm",
-    displayName: "Alex M.",
-    amountCents: 10000,
-    tier: "red",
-    message: "This film changed my perspective",
-    timeAgo: "2m ago",
-  },
-  {
-    username: "jordank",
-    displayName: "Jordan K.",
-    amountCents: 2500,
-    tier: "green",
-    message: "Love the cinematography",
-    timeAgo: "8m ago",
-  },
-  {
-    username: "samw",
-    displayName: "Sam W.",
-    amountCents: 500,
-    tier: "brown",
-    timeAgo: "15m ago",
-  },
-  {
-    username: "rileyj",
-    displayName: "Riley J.",
-    amountCents: 25000,
-    tier: "purple",
-    message: "Instant classic. Supporting the movement.",
-    timeAgo: "1h ago",
-  },
-  {
-    username: "taylorc",
-    displayName: "Taylor C.",
-    amountCents: 200,
-    tier: "grey",
-    timeAgo: "2h ago",
-  },
-];
-
 function formatAmount(cents: number): string {
   return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
 }
 
-export function MintedCardsFeed() {
+interface MintedCardsFeedProps {
+  supporters: Supporter[];
+}
+
+export function MintedCardsFeed({ supporters }: MintedCardsFeedProps) {
+  if (supporters.length === 0) {
+    return (
+      <section>
+        <h3 className="mb-4 text-lg font-bold">Recent Supporters</h3>
+        <p className="text-sm text-muted-foreground">
+          No contributions yet. Be the first!
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section>
       <h3 className="mb-4 text-lg font-bold">Recent Supporters</h3>
       <div className="flex flex-col gap-3">
-        {FAKE_SUPPORTERS.map((s) => (
+        {supporters.map((s) => (
           <Link
-            key={s.username}
+            key={s.id}
             href={`/u/${s.username}`}
             className="group flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/30"
           >

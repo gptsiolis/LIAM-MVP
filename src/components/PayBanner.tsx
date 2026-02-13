@@ -16,9 +16,18 @@ const QUICK_PICKS = [2, 5, 10, 25, 100];
 interface PayBannerProps {
   videoTitle: string;
   creatorName: string;
+  isLoggedIn: boolean;
+  onContribute: (amountCents: number, message: string) => void;
+  onAuthRequired: () => void;
 }
 
-export function PayBanner({ videoTitle, creatorName }: PayBannerProps) {
+export function PayBanner({
+  videoTitle,
+  creatorName,
+  isLoggedIn,
+  onContribute,
+  onAuthRequired,
+}: PayBannerProps) {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
@@ -27,11 +36,21 @@ export function PayBanner({ videoTitle, creatorName }: PayBannerProps) {
   };
 
   const handleContribute = () => {
-    // Will wire to server action in Step 5
-    alert(`Contributing $${amount} to "${videoTitle}" by ${creatorName}`);
+    if (!isLoggedIn) {
+      onAuthRequired();
+      return;
+    }
+
+    const cents = Math.round(Number(amount) * 100);
+    if (cents < 100 || cents > 1000000) return;
+
+    onContribute(cents, message);
+    setAmount("");
+    setMessage("");
   };
 
-  const isValid = Number(amount) >= 1 && Number(amount) <= 10000;
+  const numAmount = Number(amount);
+  const isValid = numAmount >= 1 && numAmount <= 10000;
 
   return (
     <Card className="border-border">
@@ -95,7 +114,9 @@ export function PayBanner({ videoTitle, creatorName }: PayBannerProps) {
           onClick={handleContribute}
           className="w-full text-sm font-bold hover:bg-liam-yellow-light"
         >
-          {isValid ? `Contribute $${amount}` : "Contribute"}
+          {isValid
+            ? `Contribute $${amount}`
+            : "Contribute"}
         </Button>
 
         {/* Explainer */}

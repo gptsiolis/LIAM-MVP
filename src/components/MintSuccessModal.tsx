@@ -1,0 +1,93 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { CardBadge, type TierSlug } from "@/components/CardBadge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+interface MintSuccessModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  videoTitle: string;
+  amountCents: number;
+  tierSlug: TierSlug;
+  tierName: string;
+  displayName: string;
+}
+
+function formatAmount(cents: number): string {
+  return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+}
+
+export function MintSuccessModal({
+  open,
+  onOpenChange,
+  videoTitle,
+  amountCents,
+  tierSlug,
+  tierName,
+  displayName,
+}: MintSuccessModalProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="text-center text-xl font-bold">
+            Card Minted!
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Card visual */}
+        <div className="mx-auto flex w-full max-w-[280px] flex-col overflow-hidden rounded-lg border-2 border-liam-black">
+          {/* Card top — tier-colored header */}
+          <div
+            className="flex items-center justify-between px-4 py-3"
+            style={{ backgroundColor: `var(--color-tier-${tierSlug})` }}
+          >
+            <span className="text-xs font-bold text-white drop-shadow-sm">
+              {tierName} Card
+            </span>
+            <span className="text-xs font-bold text-white/80 drop-shadow-sm">
+              #{Math.floor(Math.random() * 900 + 100)}
+            </span>
+          </div>
+
+          {/* Card body */}
+          <div className="flex flex-col gap-3 bg-card p-4">
+            <p className="text-sm font-bold leading-tight">{videoTitle}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">{displayName}</span>
+              <span className="text-lg font-extrabold">{formatAmount(amountCents)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <CardBadge tier={tierSlug} />
+              <span className="text-xs text-muted-foreground">
+                {new Date().toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+
+          {/* Card bottom accent */}
+          <div className="h-1.5 bg-primary" />
+        </div>
+
+        <p className="text-center text-sm text-muted-foreground">
+          You earned a <span className="font-bold">{tierName}</span> card for
+          contributing {formatAmount(amountCents)}!
+        </p>
+
+        <Button
+          size="lg"
+          className="w-full font-bold hover:bg-liam-yellow-light"
+          onClick={() => onOpenChange(false)}
+        >
+          Done
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
+}
