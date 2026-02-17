@@ -209,14 +209,13 @@ export default function Home() {
 
         <Separator className="my-8" />
 
-        <section className="flex flex-col gap-8 lg:flex-row">
-          <div className="w-full lg:w-1/3">
-            <Leaderboard supporters={supporters} />
-          </div>
-          <div className="w-full lg:w-2/3">
-            <MintedCardsFeed supporters={supporters} />
-          </div>
-        </section>
+        {/* Card carousel — full width for horizontal scroll */}
+        <MintedCardsFeed supporters={supporters} />
+
+        <Separator className="my-8" />
+
+        {/* Leaderboard below */}
+        <Leaderboard supporters={supporters} />
       </main>
 
       <footer className="mt-12 border-t border-border bg-muted/30 px-4 py-6 text-center">
