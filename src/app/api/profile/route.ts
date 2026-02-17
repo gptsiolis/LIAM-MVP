@@ -30,8 +30,8 @@ export async function GET() {
   const videoCards = await prisma.videoCard.findMany({
     where: { userId: session.userId },
     include: {
-      video: { select: { title: true, creatorName: true } },
-      contribution: { select: { amountCents: true, createdAt: true } },
+      video: { select: { title: true, creatorName: true, creatorId: true } },
+      contribution: { select: { amountCents: true, message: true, createdAt: true } },
     },
     orderBy: { mintedAt: "desc" },
   });
@@ -41,6 +41,14 @@ export async function GET() {
     where: { userId: session.userId },
     orderBy: { year: "desc" },
   });
+
+  // Build creator name map from videos the user contributed to
+  const creatorNameMap = new Map<string, string>();
+  for (const vc of videoCards) {
+    if (!creatorNameMap.has(vc.video.creatorId)) {
+      creatorNameMap.set(vc.video.creatorId, vc.video.creatorName);
+    }
+  }
 
   // Stats
   const totalContributed = videoCards.reduce(
@@ -64,10 +72,12 @@ export async function GET() {
       amountCents: vc.contribution.amountCents,
       tier: vc.currentTier,
       mintedAt: vc.mintedAt.toISOString(),
+      message: vc.contribution.message,
     })),
     creatorCards: creatorCards.map((cc) => ({
       id: cc.id,
       creatorId: cc.creatorId,
+      creatorName: creatorNameMap.get(cc.creatorId) ?? "Unknown Creator",
       year: cc.year,
       totalAmountCents: cc.totalAmountCents,
       tier: cc.currentTier,
