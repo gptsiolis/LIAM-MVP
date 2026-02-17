@@ -170,27 +170,28 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="mt-4 flex items-center gap-6 rounded-lg bg-muted/50 px-4 py-3">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Total Raised
-                </p>
-                <p className="text-lg font-extrabold">{formatTotal(totalRaised)}</p>
-              </div>
-              <Separator orientation="vertical" className="h-8" />
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Supporters
-                </p>
-                <p className="text-lg font-extrabold">{supporters.length}</p>
-              </div>
-              <Separator orientation="vertical" className="h-8" />
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Cards Minted
-                </p>
-                <p className="text-lg font-extrabold">{supporters.length}</p>
-              </div>
+            {/* Stats card */}
+            <div className="mt-4 grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-border shadow-sm">
+              {[
+                { label: "Total Raised", value: formatTotal(totalRaised), accent: true },
+                { label: "Supporters", value: supporters.length.toString(), accent: false },
+                { label: "Cards Minted", value: supporters.length.toString(), accent: false },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="flex flex-col items-center gap-1 bg-white px-3 py-4"
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {stat.label}
+                  </p>
+                  {stat.accent && (
+                    <div className="h-0.5 w-6 rounded-full bg-primary" />
+                  )}
+                  <p className="text-xl font-extrabold sm:text-2xl">
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 

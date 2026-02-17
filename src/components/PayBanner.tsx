@@ -94,23 +94,24 @@ export function PayBanner({
           </button>
         </div>
 
-        {/* Quick-pick buttons */}
-        <div className="flex flex-wrap gap-2">
-          {QUICK_PICKS.map((pick) => (
-            <Button
-              key={pick}
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuickPick(pick)}
-              className={
-                amount === pick.toString()
-                  ? "border-primary bg-primary/10 font-bold"
-                  : ""
-              }
-            >
-              ${pick}
-            </Button>
-          ))}
+        {/* Quick-pick buttons — 3+2 grid */}
+        <div className="grid grid-cols-3 gap-2">
+          {QUICK_PICKS.map((pick) => {
+            const selected = amount === pick.toString();
+            return (
+              <button
+                key={pick}
+                onClick={() => handleQuickPick(pick)}
+                className={`flex h-10 items-center justify-center rounded-lg text-sm font-bold transition-all duration-150 ${
+                  selected
+                    ? "bg-primary text-primary-foreground shadow-sm ring-2 ring-primary/30"
+                    : "bg-muted text-foreground hover:bg-liam-yellow-light/40"
+                }`}
+              >
+                ${pick}
+              </button>
+            );
+          })}
         </div>
 
         {/* Custom amount input */}
