@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
+import { TIER_HEX } from "@/components/FlipCard";
 import {
   Dialog,
   DialogContent,
@@ -65,15 +66,15 @@ export function MintSuccessModal({
         {/* Trading card visual — portrait ratio */}
         <div className="mx-auto w-full max-w-[240px] aspect-[2/3] transition-transform duration-300 hover:scale-[1.02]">
           <div
-            className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] bg-white shadow-xl"
-            style={{ borderColor: `var(--color-tier-${tierSlug})` }}
+            className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+            style={{ border: `4px solid ${TIER_HEX[tierSlug]}` }}
           >
             {/* Inner frame */}
             <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
               {/* Tier header */}
               <div
                 className="flex items-center justify-between px-3 py-2"
-                style={{ backgroundColor: `var(--color-tier-${tierSlug})` }}
+                style={{ backgroundColor: TIER_HEX[tierSlug] }}
               >
                 <span className="text-[11px] font-bold uppercase tracking-wider text-white drop-shadow-sm">
                   {tierName} Card

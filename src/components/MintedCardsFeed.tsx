@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
+import { TIER_HEX } from "@/components/FlipCard";
 
 export interface Supporter {
   id: string;
@@ -133,15 +134,15 @@ export function MintedCardsFeed({ supporters }: MintedCardsFeedProps) {
               className="group flex shrink-0 snap-start flex-col"
             >
               {/* Trading card — portrait */}
-              <div className="relative w-36 sm:w-44 aspect-[3/4] overflow-hidden rounded-lg border-[3px] shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-xl"
-                style={{ borderColor: `var(--color-tier-${s.tier})` }}
+              <div className="relative w-36 sm:w-44 aspect-[3/4] overflow-hidden rounded-lg shadow-lg transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-xl"
+                style={{ border: `4px solid ${TIER_HEX[s.tier]}` }}
               >
                 {/* Inner frame */}
-                <div className="absolute inset-[3px] flex flex-col overflow-hidden rounded-[5px] border border-border/40 bg-white">
+                <div className="absolute inset-1 flex flex-col overflow-hidden rounded-[5px] border border-border/40 bg-white">
                   {/* Tier header strip */}
                   <div
                     className="flex items-center justify-between px-2 py-1.5"
-                    style={{ backgroundColor: `var(--color-tier-${s.tier})` }}
+                    style={{ backgroundColor: TIER_HEX[s.tier] }}
                   >
                     <CardBadge tier={s.tier} size="sm" className="bg-white/20 text-white" />
                   </div>

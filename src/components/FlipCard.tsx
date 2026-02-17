@@ -35,15 +35,27 @@ const TIER_LABELS: Record<TierSlug, string> = {
   gold: "Gold",
 };
 
+/** Exact tier hex values — used in inline styles to bypass Tailwind border-border override */
+const TIER_HEX: Record<TierSlug, string> = {
+  grey: "#9ca3af",
+  brown: "#92643a",
+  green: "#16a34a",
+  red: "#dc2626",
+  purple: "#9333ea",
+  gold: "#eab308",
+};
+
 /** Tier-specific outer glow on hover */
 const TIER_HOVER_GLOW: Record<TierSlug, string> = {
-  grey: "group-hover:shadow-[0_8px_30px_rgba(156,163,175,0.25)]",
-  brown: "group-hover:shadow-[0_8px_30px_rgba(146,100,58,0.25)]",
-  green: "group-hover:shadow-[0_8px_30px_rgba(22,163,74,0.3)]",
-  red: "group-hover:shadow-[0_8px_30px_rgba(220,38,38,0.3)]",
-  purple: "group-hover:shadow-[0_8px_30px_rgba(147,51,234,0.35)]",
-  gold: "group-hover:shadow-[0_8px_30px_rgba(234,179,8,0.4)]",
+  grey: "group-hover:shadow-[0_8px_30px_rgba(156,163,175,0.35)]",
+  brown: "group-hover:shadow-[0_8px_30px_rgba(146,100,58,0.35)]",
+  green: "group-hover:shadow-[0_8px_30px_rgba(22,163,74,0.4)]",
+  red: "group-hover:shadow-[0_8px_30px_rgba(220,38,38,0.4)]",
+  purple: "group-hover:shadow-[0_8px_30px_rgba(147,51,234,0.45)]",
+  gold: "group-hover:shadow-[0_8px_30px_rgba(234,179,8,0.5)]",
 };
+
+export { TIER_HEX };
 
 export function FlipCard({
   tier,
@@ -57,6 +69,7 @@ export function FlipCard({
 }: FlipCardProps) {
   const [flipped, setFlipped] = useState(false);
   const serial = cardId.slice(-4).toUpperCase();
+  const tierColor = TIER_HEX[tier];
 
   return (
     <div
@@ -74,15 +87,18 @@ export function FlipCard({
       >
         {/* ===== FRONT FACE ===== */}
         <div
-          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px] bg-white shadow-xl transition-shadow duration-300 ${TIER_HOVER_GLOW[tier]}`}
-          style={{ backfaceVisibility: "hidden", borderColor: `var(--color-tier-${tier})` }}
+          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl bg-white shadow-xl transition-shadow duration-300 ${TIER_HOVER_GLOW[tier]}`}
+          style={{
+            backfaceVisibility: "hidden",
+            border: `4px solid ${tierColor}`,
+          }}
         >
           {/* --- Inner frame border --- */}
           <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
             {/* Tier header strip */}
             <div
               className="flex items-center justify-between px-3 py-2"
-              style={{ backgroundColor: `var(--color-tier-${tier})` }}
+              style={{ backgroundColor: tierColor }}
             >
               <span className="text-[11px] font-bold uppercase tracking-wider text-white drop-shadow-sm">
                 {TIER_LABELS[tier]} Card
@@ -141,11 +157,11 @@ export function FlipCard({
 
         {/* ===== BACK FACE ===== */}
         <div
-          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px] bg-liam-black shadow-xl ${TIER_HOVER_GLOW[tier]}`}
+          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl bg-liam-black shadow-xl ${TIER_HOVER_GLOW[tier]}`}
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
-            borderColor: `var(--color-tier-${tier})`,
+            border: `4px solid ${tierColor}`,
           }}
         >
           {/* Inner frame */}

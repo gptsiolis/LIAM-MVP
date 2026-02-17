@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
-import { FlipCard } from "@/components/FlipCard";
+import { FlipCard, TIER_HEX } from "@/components/FlipCard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -313,8 +313,8 @@ export default function ProfilePage() {
                     className="group aspect-[2/3] transition-all duration-200 hover:-translate-y-1"
                   >
                     <div
-                      className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] bg-white shadow-xl transition-shadow duration-300 group-hover:shadow-[0_8px_30px_rgba(8,7,8,0.15)]"
-                      style={{ borderColor: `var(--color-tier-${cc.tier})` }}
+                      className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-xl transition-shadow duration-300 group-hover:shadow-[0_8px_30px_rgba(8,7,8,0.15)]"
+                      style={{ border: `4px solid ${TIER_HEX[cc.tier]}` }}
                     >
                       {/* Inner frame */}
                       <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                         <div
                           className="flex items-center justify-between px-3 py-2"
                           style={{
-                            backgroundColor: `var(--color-tier-${cc.tier})`,
+                            backgroundColor: TIER_HEX[cc.tier],
                           }}
                         >
                           <span className="text-[10px] font-bold uppercase tracking-wider text-white drop-shadow-sm">
@@ -398,13 +398,13 @@ export default function ProfilePage() {
               >
                 {/* Mini trading card preview */}
                 <div
-                  className="flex h-20 w-14 shrink-0 flex-col overflow-hidden rounded-lg border-2 shadow-sm"
-                  style={{ borderColor: `var(--color-tier-${fc.tier})` }}
+                  className="flex h-20 w-14 shrink-0 flex-col overflow-hidden rounded-lg shadow-sm"
+                  style={{ border: `3px solid ${TIER_HEX[fc.tier]}` }}
                 >
                   {/* Tier top strip */}
                   <div
                     className="h-2.5"
-                    style={{ backgroundColor: `var(--color-tier-${fc.tier})` }}
+                    style={{ backgroundColor: TIER_HEX[fc.tier] }}
                   />
                   {/* Mini image */}
                   <div className="flex flex-1 items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200">
