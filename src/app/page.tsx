@@ -1,153 +1,165 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { PayBanner } from "@/components/PayBanner";
 import { MintedCardsFeed, type Supporter } from "@/components/MintedCardsFeed";
-import { AuthModal, type FakeUser } from "@/components/AuthModal";
+import { AuthModal, type AuthUser } from "@/components/AuthModal";
 import { MintSuccessModal } from "@/components/MintSuccessModal";
 import { Countdown } from "@/components/Countdown";
 import { Leaderboard } from "@/components/Leaderboard";
-import { computeTiers } from "@/lib/tiers";
+import { contribute } from "@/app/actions/contribute";
 import type { TierSlug } from "@/components/CardBadge";
 import { Separator } from "@/components/ui/separator";
+import { timeAgo } from "@/lib/utils";
 
-// Demo video
-const DEMO_VIDEO = {
-  title: "The Crossing — A Short Film",
-  creatorName: "Ava Chen",
-  embedUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-};
+interface VideoData {
+  id: string;
+  title: string;
+  creatorName: string;
+  creatorId: string;
+  playbackUrl: string;
+  contributableUntil: string;
+}
 
-// Contributions close 7 days from now
-const CONTRIBUTIONS_END = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-// Seed supporters
-const SEED_SUPPORTERS: Omit<Supporter, "tier">[] = [
-  {
-    id: "seed-1",
-    username: "rileyj",
-    displayName: "Riley J.",
-    amountCents: 25000,
-    message: "Instant classic. Supporting the movement.",
-    timeAgo: "1h ago",
-  },
-  {
-    id: "seed-2",
-    username: "alexm",
-    displayName: "Alex M.",
-    amountCents: 10000,
-    message: "This film changed my perspective",
-    timeAgo: "2h ago",
-  },
-  {
-    id: "seed-3",
-    username: "jordank",
-    displayName: "Jordan K.",
-    amountCents: 2500,
-    message: "Love the cinematography",
-    timeAgo: "3h ago",
-  },
-  {
-    id: "seed-4",
-    username: "samw",
-    displayName: "Sam W.",
-    amountCents: 500,
-    timeAgo: "5h ago",
-  },
-  {
-    id: "seed-5",
-    username: "taylorc",
-    displayName: "Taylor C.",
-    amountCents: 200,
-    timeAgo: "8h ago",
-  },
-];
-
-function withComputedTiers(raw: Omit<Supporter, "tier">[]): Supporter[] {
-  const amounts = raw.map((s) => s.amountCents);
-  const tiers = computeTiers(amounts);
-  return raw.map((s, i) => ({ ...s, tier: tiers[i].slug as TierSlug }));
+interface RawSupporter {
+  id: string;
+  username: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  amountCents: number;
+  tier: string;
+  message?: string | null;
+  createdAt: string;
 }
 
 function formatTotal(cents: number): string {
-  if (cents >= 100000) return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-  return `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+  return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 }
 
 export default function Home() {
-  const [user, setUser] = useState<FakeUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [rawSupporters, setRawSupporters] =
-    useState<Omit<Supporter, "tier">[]>(SEED_SUPPORTERS);
+  const [video, setVideo] = useState<VideoData | null>(null);
+  const [rawSupporters, setRawSupporters] = useState<RawSupporter[]>([]);
+  const [totalRaised, setTotalRaised] = useState(0);
+  const [contributing, setContributing] = useState(false);
   const [mintResult, setMintResult] = useState<{
     amountCents: number;
     tierSlug: TierSlug;
     tierName: string;
   } | null>(null);
 
-  const supporters = useMemo(() => withComputedTiers(rawSupporters), [rawSupporters]);
+  // Fetch session on mount
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => { if (data.user) setUser(data.user); })
+      .catch(() => {});
+  }, []);
 
-  const totalRaised = useMemo(
-    () => rawSupporters.reduce((sum, s) => sum + s.amountCents, 0),
+  // Fetch video + supporters
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/video");
+      const data = await res.json();
+      if (data.video) setVideo(data.video);
+      setRawSupporters(data.supporters ?? []);
+      setTotalRaised(data.totalRaised ?? 0);
+    } catch {
+      // Silently fail — will show empty state
+    }
+  }, []);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  // Map raw supporters to component format
+  const supporters: Supporter[] = useMemo(
+    () =>
+      rawSupporters.map((s) => ({
+        id: s.id,
+        username: s.username,
+        displayName: s.displayName,
+        avatarUrl: s.avatarUrl ?? undefined,
+        amountCents: s.amountCents,
+        tier: s.tier as TierSlug,
+        message: s.message ?? undefined,
+        timeAgo: timeAgo(s.createdAt),
+      })),
     [rawSupporters]
   );
 
+  // Handle contribution via server action
   const handleContribute = useCallback(
-    (amountCents: number, message: string) => {
-      if (!user) return;
+    async (amountCents: number, message: string) => {
+      if (!user || !video) return;
+      setContributing(true);
 
-      const newSupporter: Omit<Supporter, "tier"> = {
-        id: `mint-${Date.now()}`,
-        username: user.username,
-        displayName: user.displayName,
-        amountCents,
-        message: message || undefined,
-        timeAgo: "just now",
-      };
+      try {
+        const result = await contribute({
+          videoId: video.id,
+          amountCents,
+          message: message || undefined,
+        });
 
-      const updatedRaw = [newSupporter, ...rawSupporters];
-      setRawSupporters(updatedRaw);
+        if (!result.success) {
+          alert(result.error ?? "Contribution failed");
+          return;
+        }
 
-      const allTiers = computeTiers(updatedRaw.map((s) => s.amountCents));
-      const myTier = allTiers[0];
+        if (result.card) {
+          setMintResult({
+            amountCents: result.card.amountCents,
+            tierSlug: result.card.tier as TierSlug,
+            tierName: result.card.tierName,
+          });
+        }
 
-      setMintResult({
-        amountCents,
-        tierSlug: myTier.slug as TierSlug,
-        tierName: myTier.name,
-      });
+        // Refresh data from DB (tiers may have changed for everyone)
+        await fetchData();
+      } catch {
+        alert("Something went wrong. Please try again.");
+      } finally {
+        setContributing(false);
+      }
     },
-    [user, rawSupporters]
+    [user, video, fetchData]
   );
+
+  const handleLogout = useCallback(async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+  }, []);
+
+  const endDate = video
+    ? new Date(video.contributableUntil)
+    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar
         user={user}
         onLoginClick={() => setAuthModalOpen(true)}
-        onLogout={() => setUser(null)}
+        onLogout={handleLogout}
       />
 
       <main className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8">
         {/* Hero: Video + Pay Banner */}
         <section className="flex flex-col gap-6 lg:flex-row">
-          {/* Video (figure-dominant) */}
           <div className="w-full lg:w-3/4">
             <VideoPlayer
-              title={DEMO_VIDEO.title}
-              embedUrl={DEMO_VIDEO.embedUrl}
+              title={video?.title ?? "Loading..."}
+              embedUrl={video?.playbackUrl ?? ""}
             />
 
-            {/* Creator info */}
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-liam-black text-sm font-bold text-white">
-                  A
+                  {video?.creatorName?.[0] ?? "?"}
                 </div>
                 <div>
-                  <p className="text-sm font-bold">{DEMO_VIDEO.creatorName}</p>
+                  <p className="text-sm font-bold">{video?.creatorName ?? "..."}</p>
                   <p className="text-xs text-muted-foreground">
                     Director &middot; {supporters.length} supporter{supporters.length !== 1 && "s"}
                   </p>
@@ -158,7 +170,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Stats bar */}
             <div className="mt-4 flex items-center gap-6 rounded-lg bg-muted/50 px-4 py-3">
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -183,44 +194,38 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Sidebar: Pay Banner + Countdown */}
           <div className="flex w-full flex-col gap-4 lg:w-1/4">
             <PayBanner
-              videoTitle={DEMO_VIDEO.title}
-              creatorName={DEMO_VIDEO.creatorName}
+              videoTitle={video?.title ?? ""}
+              creatorName={video?.creatorName ?? ""}
               isLoggedIn={!!user}
+              isProcessing={contributing}
               onContribute={handleContribute}
               onAuthRequired={() => setAuthModalOpen(true)}
             />
-            <Countdown endDate={CONTRIBUTIONS_END} />
+            <Countdown endDate={endDate} />
           </div>
         </section>
 
         <Separator className="my-8" />
 
-        {/* Two-column: Leaderboard + Feed */}
         <section className="flex flex-col gap-8 lg:flex-row">
-          {/* Leaderboard (sidebar) */}
           <div className="w-full lg:w-1/3">
             <Leaderboard supporters={supporters} />
           </div>
-
-          {/* Recent supporters feed */}
           <div className="w-full lg:w-2/3">
             <MintedCardsFeed supporters={supporters} />
           </div>
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="mt-12 border-t border-border bg-muted/30 px-4 py-6 text-center">
-        <p className="text-sm font-bold text-primary-foreground">LIAM</p>
+        <p className="text-sm font-bold">LIAM</p>
         <p className="mt-1 text-xs text-muted-foreground">
           Videos you can keep. No ads. Pay what you want. Earn a card.
         </p>
       </footer>
 
-      {/* Modals */}
       <AuthModal
         open={authModalOpen}
         onOpenChange={setAuthModalOpen}
@@ -230,10 +235,8 @@ export default function Home() {
       {mintResult && (
         <MintSuccessModal
           open={!!mintResult}
-          onOpenChange={(open) => {
-            if (!open) setMintResult(null);
-          }}
-          videoTitle={DEMO_VIDEO.title}
+          onOpenChange={(open) => { if (!open) setMintResult(null); }}
+          videoTitle={video?.title ?? ""}
           amountCents={mintResult.amountCents}
           tierSlug={mintResult.tierSlug}
           tierName={mintResult.tierName}

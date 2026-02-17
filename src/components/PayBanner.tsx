@@ -10,13 +10,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CreditCardIcon, WalletIcon, Loader2Icon } from "lucide-react";
 
 const QUICK_PICKS = [2, 5, 10, 25, 100];
+
+type PaymentMethod = "card" | "usdc";
 
 interface PayBannerProps {
   videoTitle: string;
   creatorName: string;
   isLoggedIn: boolean;
+  isProcessing: boolean;
   onContribute: (amountCents: number, message: string) => void;
   onAuthRequired: () => void;
 }
@@ -25,11 +29,13 @@ export function PayBanner({
   videoTitle,
   creatorName,
   isLoggedIn,
+  isProcessing,
   onContribute,
   onAuthRequired,
 }: PayBannerProps) {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const [payMethod, setPayMethod] = useState<PaymentMethod>("card");
 
   const handleQuickPick = (value: number) => {
     setAmount(value.toString());
@@ -57,11 +63,37 @@ export function PayBanner({
       <CardHeader>
         <CardTitle className="text-xl font-bold">Pay What You Want</CardTitle>
         <CardDescription>
-          No ads. Pay what you want. Earn a card.
+          No ads. Support {creatorName || "this creator"}. Earn a card.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
+        {/* Payment method toggle */}
+        <div className="flex gap-1 rounded-lg bg-muted p-1">
+          <button
+            onClick={() => setPayMethod("card")}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-xs font-bold transition-colors ${
+              payMethod === "card"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <CreditCardIcon className="h-3.5 w-3.5" />
+            Card
+          </button>
+          <button
+            onClick={() => setPayMethod("usdc")}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-xs font-bold transition-colors ${
+              payMethod === "usdc"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <WalletIcon className="h-3.5 w-3.5" />
+            USDC
+          </button>
+        </div>
+
         {/* Quick-pick buttons */}
         <div className="flex flex-wrap gap-2">
           {QUICK_PICKS.map((pick) => (
@@ -110,18 +142,29 @@ export function PayBanner({
         {/* CTA */}
         <Button
           size="lg"
-          disabled={!isValid}
+          disabled={!isValid || isProcessing}
           onClick={handleContribute}
-          className="w-full text-sm font-bold hover:bg-liam-yellow-light"
+          className="w-full gap-2 text-sm font-bold hover:bg-liam-yellow-light"
         >
-          {isValid
-            ? `Contribute $${amount}`
-            : "Contribute"}
+          {isProcessing ? (
+            <>
+              <Loader2Icon className="h-4 w-4 animate-spin" />
+              Minting your card...
+            </>
+          ) : isValid ? (
+            `Contribute $${amount}`
+          ) : (
+            "Contribute"
+          )}
         </Button>
 
         {/* Explainer */}
         <p className="text-center text-xs text-muted-foreground">
-          Simulated USDC payment &middot; You&apos;ll earn a collectible card
+          {payMethod === "card" ? (
+            <>Simulated Stripe checkout &middot; No real charge</>
+          ) : (
+            <>Simulated USDC on Base &middot; No real transaction</>
+          )}
         </p>
       </CardContent>
     </Card>

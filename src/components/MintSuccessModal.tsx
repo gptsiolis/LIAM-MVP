@@ -119,8 +119,12 @@ export function MintSuccessModal({
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          View all your cards in{" "}
-          <span className="font-bold text-secondary">Collection</span>
+          <a
+            href="/profile"
+            className="font-bold text-secondary hover:underline"
+          >
+            View all your cards in Collection &rarr;
+          </a>
         </p>
       </DialogContent>
     </Dialog>

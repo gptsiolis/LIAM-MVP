@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  username     String   @unique
+  displayName  String
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+
+  contributions Contribution[]
+  videoCards    VideoCard[]
+  creatorCards  CreatorCard[]
+  followers     Follow[]       @relation("following")
+  following     Follow[]       @relation("follower")
+}
+
+model Video {
+  id                String   @id @default(cuid())
+  title             String
+  creatorId         String
+  creatorName       String
+  playbackUrl       String
+  contributableUntil DateTime
+  createdAt         DateTime @default(now())
+
+  contributions Contribution[]
+  videoCards    VideoCard[]
+}
+
+model Contribution {
+  id         String   @id @default(cuid())
+  userId     String
+  videoId    String
+  amountCents Int
+  message    String?
+  createdAt  DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  video Video @relation(fields: [videoId], references: [id])
+  videoCard VideoCard?
+}
+
+model VideoCard {
+  id             String   @id @default(cuid())
+  userId         String
+  videoId        String
+  contributionId String   @unique
+  mintedAt       DateTime @default(now())
+  currentTier    String   // grey, brown, green, red, purple, gold
+  tierUpdatedAt  DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  video        Video        @relation(fields: [videoId], references: [id])
+  contribution Contribution @relation(fields: [contributionId], references: [id])
+}
+
+model CreatorCard {
+  id              String   @id @default(cuid())
+  userId          String
+  creatorId       String
+  year            Int
+  totalAmountCents Int
+  currentTier     String
+  tierUpdatedAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, creatorId, year])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("follower", fields: [followerId], references: [id])
+  following User @relation("following", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
+}
