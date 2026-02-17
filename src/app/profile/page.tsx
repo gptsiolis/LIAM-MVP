@@ -248,7 +248,7 @@ export default function ProfilePage() {
 
         <Separator className="my-8" />
 
-        {/* ====== VIDEO CARDS GRID (FlipCards) ====== */}
+        {/* ====== VIDEO CARDS GRID (FlipCards — portrait) ====== */}
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold">Your Cards</h2>
@@ -271,7 +271,7 @@ export default function ProfilePage() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
               {videoCards.map((card) => (
                 <FlipCard
                   key={card.id}
@@ -289,7 +289,7 @@ export default function ProfilePage() {
           )}
         </section>
 
-        {/* ====== CREATOR AGGREGATE CARDS ====== */}
+        {/* ====== CREATOR AGGREGATE CARDS (trading card style) ====== */}
         {creatorCards.length > 0 && (
           <>
             <Separator className="my-8" />
@@ -306,58 +306,66 @@ export default function ProfilePage() {
                 contribute more.
               </p>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                 {creatorCards.map((cc) => (
                   <div
                     key={cc.id}
-                    className="flex flex-col overflow-hidden rounded-lg border-2 border-liam-black shadow-[4px_4px_0px_0px_rgba(8,7,8,0.15)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[4px_6px_0px_0px_rgba(8,7,8,0.2)]"
+                    className="group aspect-[2/3] transition-all duration-200 hover:-translate-y-1"
                   >
-                    {/* Tier header */}
-                    <div
-                      className="flex items-center justify-between px-4 py-3"
-                      style={{
-                        backgroundColor: `var(--color-tier-${cc.tier})`,
-                      }}
-                    >
-                      <span className="text-xs font-bold text-white drop-shadow-sm">
-                        Creator Card &middot; {cc.year}
-                      </span>
-                      <CardBadge
-                        tier={cc.tier as TierSlug}
-                        className="bg-white/20 text-white"
-                      />
-                    </div>
-
-                    {/* Body */}
-                    <div className="flex flex-col gap-3 bg-card p-4">
-                      <div>
-                        <p className="text-sm font-bold">{cc.creatorName}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          Your {cc.year} Passion
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2">
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                            Total contributed
-                          </p>
-                          <p className="text-lg font-extrabold">
-                            {formatAmount(cc.totalAmountCents)}
-                          </p>
+                    <div className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] border-liam-black bg-white shadow-xl transition-shadow duration-300 group-hover:shadow-[0_8px_30px_rgba(8,7,8,0.15)]">
+                      {/* Inner frame */}
+                      <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
+                        {/* Tier header */}
+                        <div
+                          className="flex items-center justify-between px-3 py-2"
+                          style={{
+                            backgroundColor: `var(--color-tier-${cc.tier})`,
+                          }}
+                        >
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-white drop-shadow-sm">
+                            Creator &middot; {cc.year}
+                          </span>
+                          <CardBadge
+                            tier={cc.tier as TierSlug}
+                            size="sm"
+                            className="bg-white/20 text-white"
+                          />
                         </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                            Rarity
-                          </p>
-                          <p className="text-sm font-bold">
-                            {TIER_LABELS[cc.tier]} Tier
-                          </p>
+
+                        {/* Creator "image" area */}
+                        <div className="relative flex flex-1 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                          {/* Creator initial as large display */}
+                          <span className="text-4xl font-extrabold text-gray-300">
+                            {cc.creatorName[0]}
+                          </span>
+
+                          {/* Amount badge overlay */}
+                          <div className="absolute bottom-2 left-2">
+                            <span className="rounded-lg bg-liam-black/80 px-2 py-0.5 text-xs font-extrabold text-white backdrop-blur-sm">
+                              {formatAmount(cc.totalAmountCents)}
+                            </span>
+                          </div>
                         </div>
+
+                        {/* Text area */}
+                        <div className="flex flex-col gap-0.5 bg-white px-3 py-2.5">
+                          <p className="text-sm font-bold leading-snug text-liam-black">
+                            {cc.creatorName}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-gray-500">
+                              Your {cc.year} Passion
+                            </p>
+                            <p className="text-[10px] font-bold text-gray-500">
+                              {TIER_LABELS[cc.tier]} Tier
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Yellow accent bar */}
+                        <div className="h-2 bg-primary" />
                       </div>
                     </div>
-
-                    <div className="h-1.5 bg-primary" />
                   </div>
                 ))}
               </div>
@@ -365,7 +373,7 @@ export default function ProfilePage() {
           </>
         )}
 
-        {/* ====== FRIENDS' TASTE / DISCOVERY ====== */}
+        {/* ====== FRIENDS' TASTE / DISCOVERY (mini trading cards) ====== */}
         <Separator className="my-8" />
         <section>
           <div className="mb-2 flex items-center gap-2">
@@ -383,43 +391,60 @@ export default function ProfilePage() {
             {FAKE_FRIENDS_CARDS.map((fc, i) => (
               <div
                 key={i}
-                className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
-                {/* Friend header */}
-                <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-muted text-[10px] font-bold">
-                      {fc.friendName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs font-bold">{fc.friendName}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    earned a card
-                  </span>
+                {/* Mini trading card preview */}
+                <div className="flex h-20 w-14 shrink-0 flex-col overflow-hidden rounded-lg border-2 border-liam-black shadow-sm">
+                  {/* Tier top strip */}
+                  <div
+                    className="h-2.5"
+                    style={{ backgroundColor: `var(--color-tier-${fc.tier})` }}
+                  />
+                  {/* Mini image */}
+                  <div className="flex flex-1 items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200">
+                    <svg
+                      className="h-3.5 w-3.5 text-gray-300"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25z"
+                      />
+                    </svg>
+                  </div>
+                  {/* Yellow accent */}
+                  <div className="h-1 bg-primary" />
                 </div>
 
-                {/* Card preview */}
-                <div className="flex items-center gap-3 px-4 py-3">
-                  {/* Mini tier dot */}
-                  <div
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
-                    style={{
-                      backgroundColor: `var(--color-tier-${fc.tier})`,
-                    }}
-                  >
-                    <span className="text-xs font-bold text-white">
+                {/* Friend info */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Avatar className="h-5 w-5">
+                      <AvatarFallback className="bg-muted text-[8px] font-bold">
+                        {fc.friendName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs font-bold">{fc.friendName}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      earned
+                    </span>
+                  </div>
+                  <p className="truncate text-sm font-bold leading-snug">
+                    {fc.videoTitle}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    by {fc.creatorName}
+                  </p>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <CardBadge tier={fc.tier} size="sm" />
+                    <span className="text-xs font-bold">
                       {formatAmount(fc.amountCents)}
                     </span>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold">
-                      {fc.videoTitle}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      by {fc.creatorName}
-                    </p>
-                  </div>
-                  <CardBadge tier={fc.tier} />
                 </div>
               </div>
             ))}

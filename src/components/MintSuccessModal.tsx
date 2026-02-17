@@ -51,6 +51,8 @@ export function MintSuccessModal({
     }
   };
 
+  const serial = Math.floor(Math.random() * 900 + 100);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
@@ -60,38 +62,65 @@ export function MintSuccessModal({
           </DialogTitle>
         </DialogHeader>
 
-        {/* Card visual */}
-        <div className="mx-auto flex w-full max-w-[280px] flex-col overflow-hidden rounded-lg border-2 border-liam-black shadow-[4px_4px_0px_0px_rgba(8,7,8,0.15)] transition-transform duration-300 hover:scale-[1.02]">
-          {/* Card top — tier-colored header */}
-          <div
-            className="flex items-center justify-between px-4 py-3"
-            style={{ backgroundColor: `var(--color-tier-${tierSlug})` }}
-          >
-            <span className="text-xs font-bold text-white drop-shadow-sm">
-              {tierName} Card
-            </span>
-            <span className="text-xs font-bold text-white/80 drop-shadow-sm">
-              #{Math.floor(Math.random() * 900 + 100)}
-            </span>
-          </div>
+        {/* Trading card visual — portrait ratio */}
+        <div className="mx-auto w-full max-w-[240px] aspect-[2/3] transition-transform duration-300 hover:scale-[1.02]">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] border-liam-black bg-white shadow-xl">
+            {/* Inner frame */}
+            <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
+              {/* Tier header */}
+              <div
+                className="flex items-center justify-between px-3 py-2"
+                style={{ backgroundColor: `var(--color-tier-${tierSlug})` }}
+              >
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white drop-shadow-sm">
+                  {tierName} Card
+                </span>
+                <span className="text-[10px] font-bold text-white/70">
+                  #{serial}
+                </span>
+              </div>
 
-          {/* Card body */}
-          <div className="flex flex-col gap-3 bg-card p-4">
-            <p className="text-sm font-bold leading-tight">{videoTitle}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">{displayName}</span>
-              <span className="text-lg font-extrabold">{formatAmount(amountCents)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <CardBadge tier={tierSlug} />
-              <span className="text-xs text-muted-foreground">
-                {new Date().toLocaleDateString()}
-              </span>
+              {/* Image area */}
+              <div className="relative flex flex-1 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                <svg
+                  className="h-10 w-10 text-gray-300"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25z"
+                  />
+                </svg>
+
+                {/* Rarity badge overlay */}
+                <div className="absolute right-2 top-2">
+                  <CardBadge tier={tierSlug} size="md" className="bg-white/90 backdrop-blur-sm" />
+                </div>
+
+                {/* Amount overlay */}
+                <div className="absolute bottom-2 left-2">
+                  <span className="rounded-lg bg-liam-black/80 px-2 py-0.5 text-xs font-extrabold text-white backdrop-blur-sm">
+                    {formatAmount(amountCents)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Text area */}
+              <div className="flex flex-col gap-0.5 bg-white px-3 py-2">
+                <p className="text-xs font-bold leading-snug text-liam-black line-clamp-2">
+                  {videoTitle}
+                </p>
+                <p className="text-[10px] text-gray-500">{displayName}</p>
+              </div>
+
+              {/* Yellow accent */}
+              <div className="h-1.5 bg-primary" />
             </div>
           </div>
-
-          {/* Card bottom accent — layered style guide look */}
-          <div className="h-1.5 bg-primary" />
         </div>
 
         <p className="text-center text-sm text-muted-foreground">
