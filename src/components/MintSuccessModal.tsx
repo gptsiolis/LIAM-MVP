@@ -85,20 +85,14 @@ export function MintSuccessModal({
               </div>
 
               {/* Image area */}
-              <div className="relative flex flex-1 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                <svg
-                  className="h-10 w-10 text-gray-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25z"
-                  />
-                </svg>
+              <div className="relative flex-1 overflow-hidden bg-gray-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                  alt={videoTitle}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent" />
 
                 {/* Rarity badge overlay */}
                 <div className="absolute right-2 top-2">

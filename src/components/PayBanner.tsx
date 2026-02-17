@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { CreditCardIcon, WalletIcon, Loader2Icon } from "lucide-react";
 
-const QUICK_PICKS = [2, 5, 10, 25, 100];
+const QUICK_PICKS = [2, 5, 10, 25, 100, 250];
 
 type PaymentMethod = "card" | "usdc";
 

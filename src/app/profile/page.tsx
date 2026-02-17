@@ -336,9 +336,17 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Creator "image" area */}
-                        <div className="relative flex flex-1 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                          {/* Creator initial as large display */}
-                          <span className="text-4xl font-extrabold text-gray-300">
+                        <div className="relative flex-1 overflow-hidden bg-gray-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                            alt={cc.creatorName}
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent" />
+
+                          {/* Creator initial overlay */}
+                          <span className="absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-sm font-extrabold text-liam-black backdrop-blur-sm">
                             {cc.creatorName[0]}
                           </span>
 
@@ -407,20 +415,13 @@ export default function ProfilePage() {
                     style={{ backgroundColor: TIER_HEX[fc.tier] }}
                   />
                   {/* Mini image */}
-                  <div className="flex flex-1 items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200">
-                    <svg
-                      className="h-3.5 w-3.5 text-gray-300"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25z"
-                      />
-                    </svg>
+                  <div className="relative flex-1 overflow-hidden bg-gray-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                      alt="Video thumbnail"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
                   </div>
                   {/* Yellow accent */}
                   <div className="h-1 bg-primary" />

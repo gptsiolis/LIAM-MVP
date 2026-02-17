@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
 
+/** Default thumbnail — YouTube maxres for the demo video */
+const DEFAULT_THUMB = "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg";
+
 interface FlipCardProps {
   tier: TierSlug;
   videoTitle: string;
@@ -12,6 +15,7 @@ interface FlipCardProps {
   mintedAt: string;
   message?: string;
   ownerName?: string;
+  thumbnailUrl?: string;
 }
 
 function formatAmount(cents: number): string {
@@ -66,6 +70,7 @@ export function FlipCard({
   mintedAt,
   message,
   ownerName,
+  thumbnailUrl = DEFAULT_THUMB,
 }: FlipCardProps) {
   const [flipped, setFlipped] = useState(false);
   const serial = cardId.slice(-4).toUpperCase();
@@ -108,26 +113,16 @@ export function FlipCard({
               </span>
             </div>
 
-            {/* Image area — ~55% of card height */}
-            <div className="relative flex flex-1 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              {/* Film frame lines for cinematic feel */}
-              <div className="absolute inset-x-0 top-0 h-px bg-black/5" />
-              <div className="absolute inset-x-0 bottom-0 h-px bg-black/5" />
-
-              {/* Video camera icon */}
-              <svg
-                className="h-12 w-12 text-gray-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25z"
-                />
-              </svg>
+            {/* Image area — fills most of card height */}
+            <div className="relative flex-1 overflow-hidden bg-gray-200">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={thumbnailUrl}
+                alt={videoTitle}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              {/* Bottom gradient for text readability */}
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent" />
 
               {/* Rarity badge — top-right corner overlay */}
               <div className="absolute right-2 top-2">
