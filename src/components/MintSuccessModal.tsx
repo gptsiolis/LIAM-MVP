@@ -64,7 +64,10 @@ export function MintSuccessModal({
 
         {/* Trading card visual — portrait ratio */}
         <div className="mx-auto w-full max-w-[240px] aspect-[2/3] transition-transform duration-300 hover:scale-[1.02]">
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] border-liam-black bg-white shadow-xl">
+          <div
+            className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] bg-white shadow-xl"
+            style={{ borderColor: `var(--color-tier-${tierSlug})` }}
+          >
             {/* Inner frame */}
             <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
               {/* Tier header */}

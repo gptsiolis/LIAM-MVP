@@ -312,7 +312,10 @@ export default function ProfilePage() {
                     key={cc.id}
                     className="group aspect-[2/3] transition-all duration-200 hover:-translate-y-1"
                   >
-                    <div className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] border-liam-black bg-white shadow-xl transition-shadow duration-300 group-hover:shadow-[0_8px_30px_rgba(8,7,8,0.15)]">
+                    <div
+                      className="flex h-full flex-col overflow-hidden rounded-2xl border-[3px] bg-white shadow-xl transition-shadow duration-300 group-hover:shadow-[0_8px_30px_rgba(8,7,8,0.15)]"
+                      style={{ borderColor: `var(--color-tier-${cc.tier})` }}
+                    >
                       {/* Inner frame */}
                       <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
                         {/* Tier header */}
@@ -394,7 +397,10 @@ export default function ProfilePage() {
                 className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               >
                 {/* Mini trading card preview */}
-                <div className="flex h-20 w-14 shrink-0 flex-col overflow-hidden rounded-lg border-2 border-liam-black shadow-sm">
+                <div
+                  className="flex h-20 w-14 shrink-0 flex-col overflow-hidden rounded-lg border-2 shadow-sm"
+                  style={{ borderColor: `var(--color-tier-${fc.tier})` }}
+                >
                   {/* Tier top strip */}
                   <div
                     className="h-2.5"

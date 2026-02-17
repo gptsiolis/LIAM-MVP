@@ -74,8 +74,8 @@ export function FlipCard({
       >
         {/* ===== FRONT FACE ===== */}
         <div
-          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px] border-liam-black bg-white shadow-xl transition-shadow duration-300 ${TIER_HOVER_GLOW[tier]}`}
-          style={{ backfaceVisibility: "hidden" }}
+          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px] bg-white shadow-xl transition-shadow duration-300 ${TIER_HOVER_GLOW[tier]}`}
+          style={{ backfaceVisibility: "hidden", borderColor: `var(--color-tier-${tier})` }}
         >
           {/* --- Inner frame border --- */}
           <div className="flex flex-1 flex-col m-1.5 rounded-xl overflow-hidden border border-border/60">
@@ -141,10 +141,11 @@ export function FlipCard({
 
         {/* ===== BACK FACE ===== */}
         <div
-          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px] border-liam-black bg-liam-black shadow-xl ${TIER_HOVER_GLOW[tier]}`}
+          className={`absolute inset-0 flex flex-col overflow-hidden rounded-2xl border-[3px] bg-liam-black shadow-xl ${TIER_HOVER_GLOW[tier]}`}
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
+            borderColor: `var(--color-tier-${tier})`,
           }}
         >
           {/* Inner frame */}
