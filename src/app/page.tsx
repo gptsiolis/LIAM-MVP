@@ -4,11 +4,11 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { PayBanner } from "@/components/PayBanner";
-import { MintedCardsFeed, type Supporter } from "@/components/MintedCardsFeed";
 import { AuthModal, type AuthUser } from "@/components/AuthModal";
 import { MintSuccessModal } from "@/components/MintSuccessModal";
-import { Countdown } from "@/components/Countdown";
-import { Leaderboard } from "@/components/Leaderboard";
+import { TopSupporters, type Supporter } from "@/components/TopSupporters";
+import { CommentsSection } from "@/components/CommentsSection";
+import { RecommendedSidebar } from "@/components/RecommendedSidebar";
 import { contribute } from "@/app/actions/contribute";
 import type { TierSlug } from "@/components/CardBadge";
 import { Separator } from "@/components/ui/separator";
@@ -34,16 +34,13 @@ interface RawSupporter {
   createdAt: string;
 }
 
-function formatTotal(cents: number): string {
-  return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
-}
-
 export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [video, setVideo] = useState<VideoData | null>(null);
   const [rawSupporters, setRawSupporters] = useState<RawSupporter[]>([]);
   const [totalRaised, setTotalRaised] = useState(0);
+  const [viewCount, setViewCount] = useState(0);
   const [contributing, setContributing] = useState(false);
   const [mintResult, setMintResult] = useState<{
     amountCents: number;
@@ -67,6 +64,7 @@ export default function Home() {
       if (data.video) setVideo(data.video);
       setRawSupporters(data.supporters ?? []);
       setTotalRaised(data.totalRaised ?? 0);
+      setViewCount(data.viewCount ?? 1234);
     } catch {
       // Silently fail — will show empty state
     }
@@ -144,79 +142,85 @@ export default function Home() {
         onLogout={handleLogout}
       />
 
-      <main className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8">
-        {/* Hero: Video + Pay Banner */}
-        <section className="flex flex-col gap-6 lg:flex-row">
-          <div className="w-full lg:w-3/4">
-            <VideoPlayer
-              title={video?.title ?? "Loading..."}
-              embedUrl={video?.playbackUrl ?? ""}
-            />
+      <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8">
+        <div className="flex flex-col gap-6 lg:flex-row">
+          {/* Left 2/3 — main content */}
+          <div className="w-full min-w-0 lg:w-2/3">
+            <section>
+              <VideoPlayer
+                title={video?.title ?? "Loading..."}
+                embedUrl={video?.playbackUrl ?? ""}
+              />
 
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-liam-black text-sm font-bold text-white">
-                  {video?.creatorName?.[0] ?? "?"}
-                </div>
-                <div>
-                  <p className="text-sm font-bold">{video?.creatorName ?? "..."}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Director &middot; {supporters.length} supporter{supporters.length !== 1 && "s"}
-                  </p>
+              {/* Title */}
+              <h1 className="mt-4 text-xl font-extrabold leading-tight sm:text-2xl">
+                {video?.title ?? "Loading..."}
+              </h1>
+
+              {/* Channel row — YouTube-style */}
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-liam-black text-sm font-extrabold text-white">
+                    {video?.creatorName?.[0] ?? "?"}
+                  </div>
+                  <div>
+                    <a
+                      href={`/creator/${video?.creatorId ?? ""}`}
+                      className="text-sm font-extrabold text-foreground hover:underline"
+                    >
+                      {video?.creatorName ?? "..."}
+                    </a>
+                    <p className="text-xs text-muted-foreground">Director</p>
+                  </div>
+                  <a
+                    href={`/creator/${video?.creatorId ?? ""}`}
+                    className="ml-1 rounded-none bg-liam-black px-4 py-1.5 text-xs font-bold text-white transition-opacity hover:opacity-80"
+                  >
+                    Visit Channel
+                  </a>
+                  <button
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:bg-liam-black hover:text-white"
+                    aria-label="Subscribe"
+                    title="Subscribe"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
-              <button className="text-xs font-bold text-secondary transition-opacity hover:opacity-80">
-                See all films by this creator &rarr;
-              </button>
-            </div>
 
-            {/* Stats card */}
-            <div className="mt-4 grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-border shadow-sm">
-              {[
-                { label: "Total Raised", value: formatTotal(totalRaised), accent: true },
-                { label: "Supporters", value: supporters.length.toString(), accent: false },
-                { label: "Cards Minted", value: supporters.length.toString(), accent: false },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex flex-col items-center gap-1 bg-white px-3 py-4"
-                >
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {stat.label}
-                  </p>
-                  {stat.accent && (
-                    <div className="h-0.5 w-6 rounded-full bg-primary" />
-                  )}
-                  <p className="text-xl font-extrabold sm:text-2xl">
-                    {stat.value}
-                  </p>
-                </div>
-              ))}
-            </div>
+              {/* Pay What You Want + Stats */}
+              <div className="mt-4">
+                <PayBanner
+                  videoTitle={video?.title ?? ""}
+                  creatorName={video?.creatorName ?? ""}
+                  isLoggedIn={!!user}
+                  isProcessing={contributing}
+                  onContribute={handleContribute}
+                  onAuthRequired={() => setAuthModalOpen(true)}
+                  totalRaised={totalRaised}
+                  supporterCount={supporters.length}
+                  viewCount={viewCount}
+                  endDate={endDate}
+                />
+              </div>
+            </section>
+
+            <Separator className="my-8" />
+
+            <TopSupporters supporters={supporters} />
+
+            <Separator className="my-8" />
+
+            <CommentsSection />
           </div>
 
-          <div className="flex w-full flex-col gap-4 lg:w-1/4">
-            <PayBanner
-              videoTitle={video?.title ?? ""}
-              creatorName={video?.creatorName ?? ""}
-              isLoggedIn={!!user}
-              isProcessing={contributing}
-              onContribute={handleContribute}
-              onAuthRequired={() => setAuthModalOpen(true)}
-            />
-            <Countdown endDate={endDate} />
+          {/* Right 1/3 — recommended videos */}
+          <div className="w-full lg:w-1/3">
+            <RecommendedSidebar />
           </div>
-        </section>
-
-        <Separator className="my-8" />
-
-        {/* Card carousel — full width for horizontal scroll */}
-        <MintedCardsFeed supporters={supporters} />
-
-        <Separator className="my-8" />
-
-        {/* Leaderboard below */}
-        <Leaderboard supporters={supporters} />
+        </div>
       </main>
 
       <footer className="mt-12 border-t border-border bg-muted/30 px-4 py-6 text-center">

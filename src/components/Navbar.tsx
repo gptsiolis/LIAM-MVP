@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MenuIcon, XIcon } from "lucide-react";
+import { MenuIcon, XIcon, SearchIcon } from "lucide-react";
 
 interface NavbarProps {
   user?: { displayName: string } | null;
@@ -18,13 +18,30 @@ export function Navbar({ user, onLoginClick, onLogout }: NavbarProps) {
   return (
     <nav className="sticky top-0 z-50 bg-primary">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="text-2xl font-extrabold tracking-tight text-primary-foreground"
-        >
-          LIAM
-        </Link>
+        {/* Logo + slogan */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="text-2xl font-extrabold tracking-tight text-primary-foreground"
+          >
+            LIAM
+          </Link>
+          <span className="hidden text-[11px] font-bold uppercase tracking-widest text-primary-foreground sm:inline">
+            The streaming service of the AI era
+          </span>
+        </div>
+
+        {/* Search bar */}
+        <div className="hidden flex-1 justify-center px-6 sm:flex md:px-12">
+          <div className="relative w-full max-w-md">
+            <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-liam-black" />
+            <input
+              type="text"
+              placeholder="Search films, creators..."
+              className="h-9 w-full rounded-none border-4 border-black bg-white pl-9 pr-3 text-sm font-bold text-black placeholder:font-bold placeholder:text-black/50 focus:border-black focus:outline-none"
+            />
+          </div>
+        </div>
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 sm:flex">

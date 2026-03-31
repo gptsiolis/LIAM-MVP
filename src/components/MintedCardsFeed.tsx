@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
-import { TIER_HEX } from "@/components/FlipCard";
+import { TIER_HEX, TIER_POSTER } from "@/components/FlipCard";
 
 export interface Supporter {
   id: string;
@@ -151,7 +151,7 @@ export function MintedCardsFeed({ supporters }: MintedCardsFeedProps) {
                   <div className="relative flex-1 overflow-hidden bg-gray-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                      src={TIER_POSTER[s.tier]}
                       alt="Video thumbnail"
                       className="absolute inset-0 h-full w-full object-cover"
                     />

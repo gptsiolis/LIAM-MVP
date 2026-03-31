@@ -15,9 +15,6 @@ export function VideoPlayer({ title, embedUrl }: VideoPlayerProps) {
           className="absolute inset-0 h-full w-full"
         />
       </div>
-      <div className="px-4 py-3">
-        <h1 className="text-lg font-bold text-white">{title}</h1>
-      </div>
     </div>
   );
 }

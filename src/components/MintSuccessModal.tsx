@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
-import { TIER_HEX } from "@/components/FlipCard";
+import { TIER_HEX, TIER_POSTER } from "@/components/FlipCard";
 import {
   Dialog,
   DialogContent,
@@ -88,7 +88,7 @@ export function MintSuccessModal({
               <div className="relative flex-1 overflow-hidden bg-gray-200">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                  src={TIER_POSTER[tierSlug]}
                   alt={videoTitle}
                   className="absolute inset-0 h-full w-full object-cover"
                 />

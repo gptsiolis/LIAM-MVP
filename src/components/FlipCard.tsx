@@ -3,8 +3,17 @@
 import { useState } from "react";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
 
-/** Default thumbnail — YouTube maxres for the demo video */
-const DEFAULT_THUMB = "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg";
+/** LOTR poster variations per tier — TMDB */
+const TIER_POSTER: Record<TierSlug, string> = {
+  gold:   "https://image.tmdb.org/t/p/w780/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
+  purple: "https://image.tmdb.org/t/p/w780/5m0zjctrxy9HeSAtnGWNLlsnr8z.jpg",
+  red:    "https://image.tmdb.org/t/p/w780/w3NF110cyjqxkQD2azmUMyaFzhG.jpg",
+  green:  "https://image.tmdb.org/t/p/w780/b4XZizlvqQkZno8cT3VPBYTGudB.jpg",
+  brown:  "https://image.tmdb.org/t/p/w780/cSkGnAA9b7Hj4rs51KdMsUfFpBd.jpg",
+  grey:   "https://image.tmdb.org/t/p/w780/wVm5xYVklWbWMKMbke06Y6kpE9R.jpg",
+};
+
+const DEFAULT_THUMB = TIER_POSTER.gold;
 
 interface FlipCardProps {
   tier: TierSlug;
@@ -59,7 +68,7 @@ const TIER_HOVER_GLOW: Record<TierSlug, string> = {
   gold: "group-hover:shadow-[0_8px_30px_rgba(234,179,8,0.5)]",
 };
 
-export { TIER_HEX };
+export { TIER_HEX, TIER_POSTER };
 
 export function FlipCard({
   tier,
@@ -70,11 +79,12 @@ export function FlipCard({
   mintedAt,
   message,
   ownerName,
-  thumbnailUrl = DEFAULT_THUMB,
+  thumbnailUrl,
 }: FlipCardProps) {
   const [flipped, setFlipped] = useState(false);
   const serial = cardId.slice(-4).toUpperCase();
   const tierColor = TIER_HEX[tier];
+  const thumb = thumbnailUrl || TIER_POSTER[tier] || DEFAULT_THUMB;
 
   return (
     <div
@@ -117,7 +127,7 @@ export function FlipCard({
             <div className="relative flex-1 overflow-hidden bg-gray-200">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={thumbnailUrl}
+                src={thumb}
                 alt={videoTitle}
                 className="absolute inset-0 h-full w-full object-cover"
               />

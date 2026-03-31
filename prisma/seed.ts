@@ -21,11 +21,12 @@ function computePercentiles(amounts: number[]): number[] {
 }
 
 function tierFromPercentile(p: number): string {
-  if (p >= 0.999) return "gold";
-  if (p >= 0.99) return "purple";
-  if (p >= 0.9) return "red";
-  if (p >= 0.75) return "green";
-  if (p >= 0.5) return "brown";
+  // Relaxed thresholds for demo — produces a rich tier spread with ~40 people
+  if (p >= 0.93) return "gold";
+  if (p >= 0.88) return "purple";
+  if (p >= 0.75) return "red";
+  if (p >= 0.50) return "green";
+  if (p >= 0.25) return "brown";
   return "grey";
 }
 
@@ -49,10 +50,10 @@ async function main() {
   const videos = await Promise.all([
     prisma.video.create({
       data: {
-        title: "Echoes of Tomorrow — Short Film",
+        title: "The Lord of the Rings: The Fellowship of the Ring",
         creatorId: "creator_ean",
-        creatorName: "Ean Shen",
-        playbackUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        creatorName: "Peter Jackson",
+        playbackUrl: "https://www.youtube.com/embed/V75dMMIW2B4",
         contributableUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
       },
     }),
@@ -61,7 +62,7 @@ async function main() {
         title: "Neon Drift — Music Video",
         creatorId: "creator_ean",
         creatorName: "Ean Shen",
-        playbackUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        playbackUrl: "https://www.youtube.com/embed/V75dMMIW2B4",
         contributableUntil: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
       },
     }),
@@ -70,7 +71,7 @@ async function main() {
         title: "The Last Garden — Documentary",
         creatorId: "creator_luna",
         creatorName: "Luna Park",
-        playbackUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        playbackUrl: "https://www.youtube.com/embed/V75dMMIW2B4",
         contributableUntil: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
       },
     }),
@@ -79,7 +80,7 @@ async function main() {
         title: "Midnight Frequencies — Experimental",
         creatorId: "creator_rio",
         creatorName: "Rio Vasquez",
-        playbackUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        playbackUrl: "https://www.youtube.com/embed/V75dMMIW2B4",
         contributableUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       },
     }),
@@ -106,6 +107,31 @@ async function main() {
     { displayName: "Sam Rivera",      username: "samr" },
     { displayName: "Nina Petrov",     username: "ninap" },
     { displayName: "Oscar Chen",      username: "oscarc" },
+    { displayName: "Lena Volkov",     username: "lenav" },
+    { displayName: "Dante Rossi",     username: "danter" },
+    { displayName: "Hana Kim",        username: "hanak" },
+    { displayName: "Tomás Herrera",   username: "tomash" },
+    { displayName: "Rina Sato",       username: "rinas" },
+    { displayName: "André Laurent",   username: "andrel" },
+    { displayName: "Chloe Adebayo",   username: "chloea" },
+    { displayName: "Ravi Patel",      username: "ravip" },
+    { displayName: "Isla Brennan",    username: "islab" },
+    { displayName: "Mateo Silva",     username: "mateos" },
+    { displayName: "Yuki Tanabe",     username: "yukit" },
+    { displayName: "Jordan Wells",    username: "jordanw" },
+    { displayName: "Amara Osei",      username: "amarao" },
+    { displayName: "Viktor Lund",     username: "viktorl" },
+    { displayName: "Freya Andersen",  username: "freyaa" },
+    { displayName: "Niko Alexiou",    username: "nikoa" },
+    { displayName: "Suki Chang",      username: "sukic" },
+    { displayName: "Diego Fuentes",   username: "diegof" },
+    { displayName: "Aisha Mbeki",     username: "aisham" },
+    { displayName: "Callum Fraser",   username: "callumf" },
+    { displayName: "Mira Johansson",  username: "miraj" },
+    { displayName: "Remy Dubois",     username: "remyd" },
+    { displayName: "Zara Hussain",    username: "zarah" },
+    { displayName: "Theo Papadakis",  username: "theop" },
+    { displayName: "Ingrid Solberg",  username: "ingrids" },
   ];
 
   const users: { id: string; username: string }[] = [];
@@ -132,19 +158,47 @@ async function main() {
   type ContribRow = [number, string, number, string | null, number];
   const contribs: ContribRow[] = [
     // --- Video 0: "Echoes of Tomorrow" (main landing page video) ---
-    // 12 contributions, wide tier spread
-    [0, "mayat",     50000, "Masterpiece. Ean never disappoints.",      168],
-    [0, "jpark",     10000, "Love this film!",                         144],
-    [0, "ariachen",   5000, "Beautiful cinematography",                 120],
-    [0, "leokwame",   2500, "Great work 🎬",                            96],
-    [0, "sofiar",     1000, null,                                        72],
-    [0, "kainaka",    1000, "Really moving story",                       48],
-    [0, "zoew",        500, null,                                        36],
-    [0, "finnob",      500, "Shared with all my friends",                24],
-    [0, "priyas",      200, "First contribution on LIAM!",               18],
-    [0, "marcusj",     200, null,                                        12],
-    [0, "elliet",      100, null,                                         6],
-    [0, "devo",        100, null,                                         2],
+    // 40 contributions — rich tier spread
+    [0, "mayat",     100000, "Masterpiece. Ean never disappoints.",      336],
+    [0, "danter",     75000, "This changed my life. Funding the future.",312],
+    [0, "andrel",     60000, "Cinema at its absolute peak.",             288],
+    [0, "jpark",      25000, "Love this film!",                         264],
+    [0, "hanak",      22000, "Cried three times. Take my money.",        240],
+    [0, "ariachen",   18000, "Beautiful cinematography",                 216],
+    [0, "lenav",      15000, "Ean is the voice of our generation.",      192],
+    [0, "tomash",     12000, "Haunting and beautiful.",                   180],
+    [0, "rinas",      10000, "Every frame a painting.",                   168],
+    [0, "leokwame",    8000, "Great work",                               156],
+    [0, "ravip",       7500, "Shared this with everyone I know.",         144],
+    [0, "sofiar",      6000, null,                                       132],
+    [0, "islab",       5000, "Extraordinary storytelling.",               120],
+    [0, "kainaka",     4500, "Really moving story",                      108],
+    [0, "mateos",      4000, "The ending broke me.",                       96],
+    [0, "yukit",       3500, null,                                         90],
+    [0, "zoew",        3000, null,                                         84],
+    [0, "jordanw",     2500, "This is why I love LIAM.",                   78],
+    [0, "finnob",      2500, "Shared with all my friends",                 72],
+    [0, "amarao",      2000, "Stunning. Just stunning.",                   66],
+    [0, "viktorl",     2000, null,                                         60],
+    [0, "freyaa",      1500, "Wow.",                                       54],
+    [0, "nikoa",       1500, null,                                         48],
+    [0, "priyas",      1000, "First contribution on LIAM!",                42],
+    [0, "sukic",       1000, null,                                         38],
+    [0, "marcusj",      800, null,                                         34],
+    [0, "diegof",       700, "Incredible short film.",                     30],
+    [0, "aisham",       600, null,                                         26],
+    [0, "elliet",       500, "Beautiful.",                                  22],
+    [0, "callumf",      500, null,                                         20],
+    [0, "chloea",       400, "Love from Lagos!",                           18],
+    [0, "devo",         400, null,                                         16],
+    [0, "miraj",        300, null,                                         14],
+    [0, "remyd",        300, "Magnifique.",                                12],
+    [0, "samr",         250, null,                                         10],
+    [0, "ninap",        200, null,                                          8],
+    [0, "oscarc",       200, null,                                          6],
+    [0, "zarah",        150, "Great film!",                                 4],
+    [0, "theop",        100, null,                                          3],
+    [0, "ingrids",      100, null,                                          1],
 
     // --- Video 1: "Neon Drift" (same creator: Ean Shen) ---
     // 8 contributions, some overlapping users

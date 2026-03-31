@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { CardBadge, type TierSlug } from "@/components/CardBadge";
-import { FlipCard, TIER_HEX } from "@/components/FlipCard";
+import { FlipCard, TIER_HEX, TIER_POSTER } from "@/components/FlipCard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -339,7 +339,7 @@ export default function ProfilePage() {
                         <div className="relative flex-1 overflow-hidden bg-gray-200">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                            src={TIER_POSTER[cc.tier]}
                             alt={cc.creatorName}
                             className="absolute inset-0 h-full w-full object-cover"
                           />
@@ -418,7 +418,7 @@ export default function ProfilePage() {
                   <div className="relative flex-1 overflow-hidden bg-gray-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                      src={TIER_POSTER[fc.tier]}
                       alt="Video thumbnail"
                       className="absolute inset-0 h-full w-full object-cover"
                     />
