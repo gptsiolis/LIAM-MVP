@@ -1,13 +1,17 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
 function createClient() {
-  const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL ?? "file:./dev.db",
+  // In production (Vercel), use Turso (libSQL) — a network-accessible,
+  // persistent SQLite-compatible database. Locally, fall back to the
+  // on-disk SQLite file. libSQL speaks to both via the same adapter.
+  const adapter = new PrismaLibSql({
+    url: process.env.TURSO_DATABASE_URL ?? process.env.DATABASE_URL ?? "file:./dev.db",
+    authToken: process.env.TURSO_AUTH_TOKEN,
   });
   return new PrismaClient({ adapter });
 }
