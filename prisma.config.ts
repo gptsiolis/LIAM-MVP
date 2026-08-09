@@ -2,22 +2,13 @@
 // npm install --save-dev prisma dotenv
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
-  // Use the libSQL driver adapter so CLI commands (db push, seed, studio)
-  // connect to Turso when TURSO_DATABASE_URL is set, and to the local
-  // SQLite file otherwise.
-  adapter: async () =>
-    new PrismaLibSql({
-      url:
-        process.env["TURSO_DATABASE_URL"] ??
-        process.env["DATABASE_URL"] ??
-        "file:./dev.db",
-      authToken: process.env["TURSO_AUTH_TOKEN"],
-    }),
+  datasource: {
+    url: process.env["DATABASE_URL"],
+  },
 });
